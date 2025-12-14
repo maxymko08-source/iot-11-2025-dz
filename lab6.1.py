@@ -42,8 +42,7 @@ def logged(exception_cls):
 class JsonFileManager:
     def __init__(self, file_path):
         self.file_path = file_path
-        if not os.path.exists(self.file_path):
-            raise FileNotFound(f"File '{self.file_path}' not found")
+
 
     @logged(FileNotFound)
     def create_file(self, initial_data=None):
@@ -112,23 +111,21 @@ class JsonFileManager:
         except json.JSONDecodeError as e:
             raise FileCorrupted(f"The file contains an invalid JSON: {e}")
         except Exception as e:
-            raise FileCorrupted(f"Post error (append): {e}")
+            raise FileCorrupted(f"Failed to append data (append): {e}")
 
 
 if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(script_dir)
 
-    file_name = "File_Json.json"
+    file_name = "data.json"
 
     if os.path.exists(file_name):
         os.remove(file_name)
 
-    manager_creator = JsonFileManager.__new__(JsonFileManager)
-    manager_creator.file_path = file_name
-    manager_creator.create_file()
-
     manager = JsonFileManager(file_name)
+
+    manager.create_file()
 
     manager.append_file({"user": "Andriy", "role": "admin"})
     manager.append_file({"user": "Oksana", "role": "editor"})
